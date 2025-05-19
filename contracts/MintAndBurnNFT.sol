@@ -9,7 +9,7 @@ import {IERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-sol
 import {SafeERC20} from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import {WrappedNFT} from "./WrappedNFT.sol";
 
-contract NFTPoolBurnAndMint is CCIPReceiver, OwnerIsCreator {
+contract MintAndBurnNFT is CCIPReceiver, OwnerIsCreator {
     using SafeERC20 for IERC20;
 
     error NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees);
