@@ -23,7 +23,7 @@ const chainIdConfig = {
 }
 
 module.exports = {
-  defaultNetwork:"hardhat", // hardhat sepolia
+  defaultNetwork: "hardhat", // hardhat sepolia
 
   solidity:{
     compilers: [
@@ -37,7 +37,7 @@ module.exports = {
   },
 
   namedAccounts: {
-    deployerAddr: {
+    account1: {
       default: 0
     }
   },

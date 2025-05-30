@@ -20,7 +20,14 @@ npx env-enc set
 ```
 
 ```shell
-npx hardhat deploy --tags sepolia
-npx hardhat {task-name}
 npx hardhat run ./scripts/depoly.js
+
+npx hardhat deploy --tags all
+npx hardhat {task-name}
+```
+
+```shell
+npx hardhat clean
+npx hardhat compile
+npx hardhat deploy --tags all --network hardhat
 ```

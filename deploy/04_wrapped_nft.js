@@ -1,14 +1,15 @@
 module.exports = async({getNamedAccounts, deployments}) => {
-    const { deployerAddr } = await getNamedAccounts()
+    const { account1 } = await getNamedAccounts();
     const { deploy, log } = deployments
 
-    log("deploying wrappedNFT")
+    log("部署wrappedNFT")
     await deploy("WrappedNFT", {
         contract: "WrappedNFT",
-        from: deployerAddr,
+        from: account1,
         log: true,
         args: ["WrappedNFT", "WNFT"]
     })
+    log("wrappedNFT部署完成")
 }
 
 module.exports.tags = ["all", "destchain"]
