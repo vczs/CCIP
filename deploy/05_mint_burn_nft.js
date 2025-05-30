@@ -14,8 +14,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
         router = config.destinationRouter_;
         linkTokenAddr = config.linkToken_;
-
-        log(`本地环境部署：Router 地址为 ${router}，LINK 代币地址为 ${linkTokenAddr}`);
+        
+        log(`[本地环境] Router:${router}, LINK:${linkTokenAddr}`);
     } else {
         const { chainId } = network.config;
         const config = chainIdConfig[chainId];
@@ -23,21 +23,18 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         router = config.router;
         linkTokenAddr = config.linkToken;
 
-        log(`非本地环境部署：Router 地址为 ${router}，LINK 代币地址为 ${linkTokenAddr}`);
+        log(`[非本地环境] Router:${router}, LINK:${linkTokenAddr}`);
     }
 
     const wrappedNFTDeployment = await get("WrappedNFT");
-
-    log(`正在部署 MintAndBurnNFT 合约，WrappedNFT 地址为: ${wrappedNFTDeployment.address}`);
-
-    await deploy("MintAndBurnNFT", {
+    const result = await deploy("MintAndBurnNFT", {
         contract: "MintAndBurnNFT",
         from: account1,
-        log: true,
+        log: false,
         args: [router, linkTokenAddr, wrappedNFTDeployment.address],
     });
 
-    log("MintAndBurnNFT 合约部署完成");
+    console.log("MintAndBurnNFT部署完成，合约地址：", result.address);
 };
 
 module.exports.tags = ["all", "destchain"];

@@ -7,7 +7,7 @@ import {Client} from "@chainlink/contracts-ccip/contracts/libraries/Client.sol";
 import {CCIPReceiver} from "@chainlink/contracts-ccip/contracts/applications/CCIPReceiver.sol";
 import {IERC20} from "@chainlink/contracts/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@chainlink/contracts/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
-import {NFT} from "./NFT.sol";
+import {MyNFT} from "./MyNFT.sol";
 
 contract LockAndReleaseNFT is CCIPReceiver, OwnerIsCreator {
     using SafeERC20 for IERC20;
@@ -38,7 +38,7 @@ contract LockAndReleaseNFT is CCIPReceiver, OwnerIsCreator {
     mapping(address => bool) public allowlistedSenders; // 允许跨链请求的发送者
 
     IERC20 private s_linkToken; // 支付 CCIP 的 LINK token
-    NFT public nft; // 调用者自己NFT合约实例
+    MyNFT public nft; // 调用者自己NFT合约实例
 
     mapping(uint256 => bool) public tokenLocked; // 标记某个 NFT 是否已被锁定
     
@@ -46,7 +46,7 @@ contract LockAndReleaseNFT is CCIPReceiver, OwnerIsCreator {
 
     constructor(address _router, address _link, address nftAddr) CCIPReceiver(_router) {
         s_linkToken = IERC20(_link);
-        nft = NFT(nftAddr);
+        nft = MyNFT(nftAddr);
     }
 
     // 锁仓与发送 NFT

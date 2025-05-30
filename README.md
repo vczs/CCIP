@@ -20,14 +20,16 @@ npx env-enc set
 ```
 
 ```shell
+npx hardhat clean
+npx hardhat compile
 npx hardhat run ./scripts/depoly.js
-
-npx hardhat deploy --tags all
-npx hardhat {task-name}
 ```
 
 ```shell
-npx hardhat clean
-npx hardhat compile
-npx hardhat deploy --tags all --network hardhat
+npx hardhat node
+npx hardhat deploy --tags all --network localhost
+npx hardhat {task-name} --network localhost
+
+npx hardhat console --network localhost
+await network.provider.send("evm_mine")
 ```

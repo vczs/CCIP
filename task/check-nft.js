@@ -1,12 +1,13 @@
 const { task } = require("hardhat/config")
 
 task("check-nft").setAction(async(taskArgs, hre) => {
-    const { deployerAddr } = await getNamedAccounts()
-    const nft = await ethers.getContract("NFT", deployerAddr)
+    const { ethers, deployments } = hre;
 
-    console.log("checking status of ERC-721")
+    const nftDeployment = await deployments.get("MyNFT");
+    const nft = await ethers.getContractAt("MyNFT", nftDeployment.address);
+
     const totalSupply = await nft.totalSupply()
-    console.log(`there are ${totalSupply} tokens under the collection`)
+    console.log(`MyNFT合约共${totalSupply}个NFT。`)
     for(let tokenId = 0; tokenId < totalSupply; tokenId++) {
         const owner = await nft.ownerOf(tokenId)
         console.log(`TokenId: ${tokenId}, Owner is ${owner}`)

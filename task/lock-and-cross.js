@@ -5,16 +5,17 @@ task("lock-and-cross")
     .addOptionalParam("chainselector", "chain selector of destination chain")
     .addOptionalParam("receiver", "receiver in the destination chain").setAction(async(taskArgs, hre) => {
         const tokenId = taskArgs.tokenid
+        const destNetwork = hre.config.companionNetworks[hre.network.name];
 
-        const { deployerAddr } = await getNamedAccounts()
-        console.log(`deployer is ${deployerAddr}`)
+        const [account1] = await ethers.getSigners();
+        console.log(`deployer is ${account1}`)
 
         let destReceiver
         if(taskArgs.receiver) {
             destReceiver = taskArgs.receiver
         } else {
-            const nftBurnAndMint = await hre.companionNetworks["destChain"].deployments.get("NFTPoolBurnAndMint")
-            destReceiver = nftBurnAndMint.address
+            const nftBurnAndMint = await hre.companionMap[destNetwork].deployments.get("MintAndBurnNFT");
+            destReceiver = nftBurnAndMint.address;
         }
         console.log(`NFTPoolBurnAndMint address on destination chain is ${destReceiver}`)
 

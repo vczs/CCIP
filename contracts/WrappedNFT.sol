@@ -1,11 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import {NFT} from "./NFT.sol";
+import {MyNFT} from "./MyNFT.sol";
 
-contract WrappedNFT is NFT {
+contract WrappedNFT is MyNFT {
     constructor(string memory tokenName, string memory tokenSymbol) 
-    NFT(tokenName, tokenSymbol) {}
+    MyNFT(tokenName, tokenSymbol) {}
 
     function mintWithSpecificTokenId(address to, uint256 _tokenId) public {
         _safeMint(to, _tokenId);

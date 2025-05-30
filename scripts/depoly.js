@@ -19,11 +19,11 @@ async function main() {
     console.log(`ccipBnM：${ccipBnM_}`);
     console.log(`ccipLnM：${ccipLnM_}`);
 
-    // 部署 NFT 合约
-    const nft = await ethers.getContractFactory("NFT")
-        .then(factory => factory.connect(deployer).deploy("NFT", "NFT"));
+    // 部署 MyNFT 合约
+    const nft = await ethers.getContractFactory("MyNFT")
+        .then(factory => factory.connect(deployer).deploy("MyNFT", "MyNFT"));
     await nft.waitForDeployment();
-    console.log(`NFT 合约已部署，地址：${nft.target}`);
+    console.log(`MyNFT 合约已部署，地址：${nft.target}`);
 
     // 部署 LockAndReleaseNFT 合约
     const lockAndReleaseNFT = await ethers.getContractFactory("LockAndReleaseNFT")

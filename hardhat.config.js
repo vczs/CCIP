@@ -43,24 +43,28 @@ module.exports = {
   },
 
   networks: {
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      chainId: 31337
+    },
     sepolia: {
       url: SEPOLIA_RPC_URL,
       accounts: [PRIVATE_KEY],
       chainId: 11155111,
-      blockConfirmations: 6,
-      companionNetworks: {
-        destChain: "amoy"
-      }
+      blockConfirmations: 6
     },
     amoy: {
       url: AMOY_RPC_URL,
       accounts: [PRIVATE_KEY],
       chainId: 80002,
       blockConfirmations: 6,
-      companionNetworks: {
-        destChain: "sepolia"
-      }
     }
+  },
+
+  companionMap: {
+    sepolia: "amoy",
+    amoy: "sepolia",
+    localhost:"",
   },
 
   chainIdConfig
