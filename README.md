@@ -32,7 +32,7 @@ npx hardhat {task-name}
 
 ```shell
 npx hardhat node
-npx hardhat deploy --tags all --network localhost
+npx hardhat deploy --tags all --network localhost --reset 
 npx hardhat {task-name} --network localhost
 
 # localhost 挖矿
