@@ -1,57 +1,78 @@
-const { task, chainIdConfig } = require("hardhat/config")
+const { task } = require("hardhat/config");
+const { NET_WORK_CONFIG_BY_CHAINID } = require("../helper.hardhat.config");
 
-task("lock-and-cross")
-    .addParam("tokenid", "tokenId to be locked and crossed")
-    .addOptionalParam("chainselector", "chain selector of destination chain")
-    .addOptionalParam("receiver", "receiver in the destination chain").setAction(async(taskArgs, hre) => {
-        const tokenId = taskArgs.tokenid
-        const destNetwork = hre.config.companionNetworks[hre.network.name];
+task("lock-and-cross", "锁仓并跨链发送 NFT")
+  .addParam("tokenid", "要锁仓并跨链的 NFT 的 tokenId")
+  .addOptionalParam("chainselector", "目标链的 Chain Selector")
+  .addOptionalParam("receiver", "目标链上的接收地址")
+  .setAction(async (taskArgs, hre) => {
+    const { ethers, network, deployments } = hre;
 
-        const [account1] = await ethers.getSigners();
-        console.log(`deployer is ${account1}`)
+    const [deployer] = await ethers.getSigners();
+    const currentNetworkName = network.name;
+    const currentNetworkchainId = network.config.chainId;
+    const tokenId = taskArgs.tokenid;
+    console.log(`部署者地址为:${deployer.address}`);
+    console.log(`当前网络名:${currentNetworkName}，当前网络链ID:${currentNetworkchainId}`);
+    console.log(`跨链的 NFT Token ID: ${tokenId}`);
 
-        let destReceiver
-        if(taskArgs.receiver) {
-            destReceiver = taskArgs.receiver
-        } else {
-            const nftBurnAndMint = await hre.companionMap[destNetwork].deployments.get("MintAndBurnNFT");
-            destReceiver = nftBurnAndMint.address;
-        }
-        console.log(`NFTPoolBurnAndMint address on destination chain is ${destReceiver}`)
+    // 获取目标链的 Chain Selector
+    let destChainSelector = taskArgs.chainselector;
+    if (!destChainSelector) {
+      const chainConfig = NET_WORK_CONFIG_BY_CHAINID[currentNetworkchainId];
+      destChainSelector = chainConfig.companionChainSelector;
+    }
+    console.log(`目标链的 Chain Selector 为:${destChainSelector}`);
 
-        let destChainSelector
-        if(taskArgs.chainselector) {
-            destChainSelector = taskArgs.chainselector
-        } else {
-            destChainSelector = chainIdConfig[network.config.chainId].companionChainSelector
-        }
-        console.log(`destination chain selector is ${destChainSelector}`)
+    // 获取目标链接收地址
+    let destReceiver = taskArgs.receiver;
+    if (!destReceiver) {
+      const nftBurnAndMint = await hre.companionNetworks["destChain"].deployments.get("MintAndBurnNFT")
+      destReceiver = nftBurnAndMint.address;
+    }
+    console.log(`目标链上的 destReceiver 合约地址为: ${destReceiver}`);
 
-        const linkTokenAddr = chainIdConfig[network.config.chainId].linkToken
-        const linkToken = await ethers.getContractAt("LinkToken", linkTokenAddr)
-        const nftPoolLockAndRelease = await ethers.getContract("NFTPoolLockAndRelease", deployerAddr)
-        
-        const balanceBefore = await linkToken.balanceOf(nftPoolLockAndRelease.target)
-        console.log(`balance before: ${balanceBefore}`)
-        const transferTx = await linkToken.transfer(nftPoolLockAndRelease.target, ethers.parseEther("10"))
-        await transferTx.wait(6)
-        const balanceAfter = await linkToken.balanceOf(nftPoolLockAndRelease.target)
-        console.log(`balance after: ${balanceAfter}`)
+    // 获取合约实例
+    const nftDeployment = await deployments.get("MyNFT");
+    const nft = await ethers.getContractAt("MyNFT", nftDeployment.address);
+    console.log(`MyNFT合约地址:${nftDeployment.address}`);
+    const lockAndReleaseNFTDeployment = await deployments.get("LockAndReleaseNFT");
+    const lockAndReleaseNFT = await ethers.getContractAt("LockAndReleaseNFT", lockAndReleaseNFTDeployment.address);
+    console.log(`LockAndReleaseNFT合约地址:${lockAndReleaseNFTDeployment.address}`);
 
-        const nft = await ethers.getContract("MyToken", deployerAddr)
-        await nft.approve(nftPoolLockAndRelease.target, tokenId)
-        console.log("approve successfully")
+    // 授权 NFT
+    console.log(`MyNFT 授权 lockAndReleaseNFT 对 tokenId[${tokenId}] 操作,等待5个区块确认...`);
+    const approveTx = await nft.approve(lockAndReleaseNFT.target, tokenId);
+    await approveTx.wait(5);
+    console.log(`已授权 NFT（tokenId=${tokenId}）给 LockAndReleaseNFT 合约`);
 
-        console.log(`${tokenId}, ${deployerAddr}, ${destChainSelector}, ${destReceiver}`)
-        const lockAndCrossTx = await nftPoolLockAndRelease
-            .lockAndSendNFT(
-            tokenId, 
-            deployerAddr, 
-            destChainSelector, 
-            destReceiver
-        )
-        
-        console.log(`NFT locked and crossed, transaction hash is ${lockAndCrossTx.hash}`)
-})
+    /*
+    // 获取linkToken
+    const linkTokenAddress = NET_WORK_CONFIG_BY_CHAINID[currentNetworkchainId].linkToken;
+    const linkToken = await ethers.getContractAt("LinkToken", linkTokenAddress);
+    console.log(`linkToken地址:${linkTokenAddress}`);
 
-module.exports = {}
+    // 发送 LINK 作为费用
+    console.log(`向linkToken中为 LockAndReleaseNFT合约 充值LINK，等待5个区块确认...`);
+    const transferTx = await linkToken.transfer(lockAndReleaseNFT.target, ethers.parseEther("1"));
+    await transferTx.wait(5);
+    const balanceAfter = await linkToken.balanceOf(lockAndReleaseNFT.target);
+    console.log(`LockAndReleaseNFT合约在linkToken中 LINK 余额:${balanceAfter}`);
+    */
+
+    console.log(`准备执行锁仓并跨链:`);
+    console.log(`tokenId: ${tokenId}`);
+    console.log(`发送者地址: ${deployer.address}`);
+    console.log(`目标 Chain Selector: ${destChainSelector}`);
+    console.log(`接收者地址: ${destReceiver}`);
+
+    const lockAndCrossTx = await lockAndReleaseNFT.lockAndSendNFT(
+      tokenId,
+      deployer.address,
+      destChainSelector,
+      destReceiver
+    );
+    console.log(`NFT 已锁仓并跨链，交易哈希:${lockAndCrossTx.hash}`);
+  });
+
+module.exports = {};

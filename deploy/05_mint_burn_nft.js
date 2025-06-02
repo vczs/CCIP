@@ -1,5 +1,5 @@
 const { network, ethers } = require("hardhat");
-const { DEV_NETWORK_NAME } = require("../dev.hardhat.config");
+const { DEV_NETWORK_NAME, NET_WORK_CONFIG_BY_CHAINID } = require("../helper.hardhat.config");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { account1 } = await getNamedAccounts();
@@ -11,18 +11,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         const simulatorDeployment = await get("CCIPLocalSimulator");
         const simulator = await ethers.getContractAt("CCIPLocalSimulator", simulatorDeployment.address);
         const config = await simulator.configuration();
-
         router = config.destinationRouter_;
         linkTokenAddr = config.linkToken_;
-        
         log(`[本地环境] Router:${router}, LINK:${linkTokenAddr}`);
     } else {
-        const { chainId } = network.config;
-        const config = chainIdConfig[chainId];
-
+        const config = NET_WORK_CONFIG_BY_CHAINID[network.config.chainId];
         router = config.router;
         linkTokenAddr = config.linkToken;
-
         log(`[非本地环境] Router:${router}, LINK:${linkTokenAddr}`);
     }
 
@@ -34,7 +29,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         args: [router, linkTokenAddr, wrappedNFTDeployment.address],
     });
 
-    console.log("MintAndBurnNFT部署完成，合约地址：", result.address);
+    console.log("MintAndBurnNFT部署完成，合约地址:", result.address);
 };
 
-module.exports.tags = ["all", "destchain"];
+module.exports.tags = ["all", "dest"];

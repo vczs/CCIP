@@ -1,10 +1,11 @@
 const { network } = require("hardhat");
-const { DEV_NETWORK_NAME } = require("../dev.hardhat.config");
+const { DEV_NETWORK_NAME } = require("../helper.hardhat.config");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     if (DEV_NETWORK_NAME.includes(network.name)) {
-        const { deploy } = deployments;
         const { account1 } = await getNamedAccounts();
+
+        const { deploy } = deployments;
         const result = await deploy("CCIPLocalSimulator", {
             contract: "CCIPLocalSimulator",
             from: account1,

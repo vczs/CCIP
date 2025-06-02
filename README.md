@@ -25,15 +25,19 @@ npx hardhat compile
 ```
 
 ```shell
-npx hardhat run ./scripts/depoly.js
-npx hardhat deploy --tags all
-npx hardhat {task-name}
-```
-
-```shell
 npx hardhat node
-npx hardhat deploy --tags all --network localhost --reset 
-npx hardhat {task-name} --network localhost
+npx hardhat run ./scripts/depoly.js --network localhost
+npx hardhat deploy --tags all --network localhost --reset
+npx hardhat test --network hardhat
+
+# task
+npx hardhat deploy --tags source --network sepolia
+npx hardhat deploy --tags dest --network amoy
+npx hardhat mint-nft --network sepolia
+npx hardhat check-nft --network sepolia
+npx hardhat lock-and-cross --tokenid 1 --network sepolia
+npx hardhat check-wnft --tokenid 1 --network amoy
+npx hardhat burn-and-cross --tokenid 1 --network amoy
 
 # localhost 挖矿
 npx hardhat console --network localhost

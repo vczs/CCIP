@@ -1,5 +1,5 @@
 exports.mintNft = require("./mint-nft")
 exports.lockAndCross = require("./lock-and-cross")
 exports.checkNft = require("./check-nft")
-exports.checkWrappedNft = require("./check-wrapped-nft")
+exports.checkWrappedNft = require("./check-wnft")
 exports.burnAndMint = require("./burn-and-cross")

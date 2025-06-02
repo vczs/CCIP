@@ -1,5 +1,5 @@
-const { network, ethers, chainIdConfig } = require("hardhat");
-const { DEV_NETWORK_NAME } = require("../dev.hardhat.config");
+const { network, ethers } = require("hardhat");
+const { DEV_NETWORK_NAME, NET_WORK_CONFIG_BY_CHAINID } = require("../helper.hardhat.config");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { account1 } = await getNamedAccounts();
@@ -18,7 +18,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       log(`[本地环境] Router:${sourceChainRouter}, LINK:${linkToken}`);
     } else {
       const { chainId } = network.config;
-      const config = chainIdConfig[chainId];
+      const config = NET_WORK_CONFIG_BY_CHAINID[chainId];
 
       sourceChainRouter = config.router;
       linkToken = config.linkToken;
@@ -36,4 +36,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     console.log("LockAndReleaseNFT已部署,地址:", result.address);
 };
 
-module.exports.tags = ["all", "sourcechain"];
+module.exports.tags = ["all", "source"];
